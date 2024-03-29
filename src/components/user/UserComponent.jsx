@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LayoutComponents from "../LayoutComponents";
 import { Modal, Button } from "react-bootstrap";
 
-import UserService from '../../services/userService';
+import UserService from "../../services/userService";
 
 const UserComponent = () => {
   const [createShow, setCreateShow] = useState(false);
@@ -11,38 +11,64 @@ const UserComponent = () => {
     setCreateShow(!createShow);
   };
 
-  // user data 
+  // user data
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [userSelectedFile, setUserSelectedFile] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [userSelectedFile, setUserSelectedFile] = useState("");
 
-  const createFormSubmit = async(event)=>{
+  const createFormSubmit = async (event) => {
     event.preventDefault();
 
-    const  formData =  new FormData();
+    const formData = new FormData();
 
-    formData.append('name',name);
-    formData.append('email',email);
-    formData.append('mno',mobile);
-    if(userSelectedFile !== '' && userSelectedFile.length !=0){
-      formData.append('image', userSelectedFile);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("mno", mobile);
+    if (userSelectedFile !== "" && userSelectedFile.length !== 0) {
+      formData.append("image", userSelectedFile);
     }
-  const response  =   await UserService.create(formData);
+    const response = await UserService.create(formData);
 
-  if(response.data.success === true){
-    alert('User Successfully Created!');
+    if (response.data.success === true) {
+      alert("User Successfully Created!");
+    } else {
+      alert(response.data.msg);
+    }
 
+    createModal();
+    fetchUsers();
+  };
+
+  const [users, setUsers] = useState({});
+
+  const fetchUsers = async () => {
+    setUsers(await UserService.getUsers());
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [users]);
+
+  // delete users 
+
+  const deleteUser = async(user_id)=>{
+    const formData = new FormData();
+    formData.append('user_id',user_id);
+
+      const response = await UserService.deleteUser(formData);
+      // console.log(response.data)
+
+      if(response.data.success === true){
+        alert(response.data.msg);
+      }
+      else{
+        alert(response.data.msg);
+
+      }
+      fetchUsers();
   }
-  else{
-    alert(response.data.msg);
-  }
-
-  createModal();
-
-  }
-
 
   return (
     <div className="wrapper d-flex align-items-stretch">
@@ -65,7 +91,7 @@ const UserComponent = () => {
                 name="name"
                 placeholder="Enter Name"
                 className="w-100 mb-3"
-                onChange={event => setName(event.target.value)}
+                onChange={(event) => setName(event.target.value)}
                 required
               />
               <input
@@ -73,7 +99,7 @@ const UserComponent = () => {
                 name="email"
                 placeholder="Enter Email"
                 className="w-100 mb-3"
-                onChange={event=> setEmail(event.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 required
               />
               <input
@@ -81,10 +107,16 @@ const UserComponent = () => {
                 name="mno"
                 placeholder="Enter Mobile No."
                 className="w-100 mb-3"
-                onChange={event => setMobile(event.target.value)}
+                onChange={(event) => setMobile(event.target.value)}
                 required
               />
-              <input type="file" name="image" className="w-100 mb-3" onChange={event => setUserSelectedFile(event.target.files[0])} required />
+              <input
+                type="file"
+                name="image"
+                className="w-100 mb-3"
+                onChange={(event) => setUserSelectedFile(event.target.files[0])}
+                required
+              />
             </Modal.Body>
 
             <Modal.Footer>
@@ -97,6 +129,39 @@ const UserComponent = () => {
             </Modal.Footer>
           </form>
         </Modal>
+
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>MobileNo</th>
+              <th>Image</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          {users.data !== undefined && users.data.data.length > 0 && (
+            <tbody>
+              {users.data.data.map((user) => (
+                <tr>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>{user.mno}</td>
+                  <td>
+                    <img
+                      src={"http://127.0.0.1:8088/api/" + user.image}
+                      style={{ width: "100px", height: "100px" }}
+                      alt=""
+                    />
+                  </td>
+                  <td>
+                    <button className="btn btn-danger" onClick={event=> deleteUser(user._id)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
+        </table>
       </div>
     </div>
   );

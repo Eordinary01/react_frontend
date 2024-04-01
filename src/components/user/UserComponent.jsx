@@ -6,10 +6,14 @@ import UserService from "../../services/userService";
 
 const UserComponent = () => {
   const [createShow, setCreateShow] = useState(false);
+  const[updateShow,updateCreateShow]= useState(false);
 
   const createModal = () => {
     setCreateShow(!createShow);
   };
+  const updateModal=()=>{
+    updateCreateShow(!updateShow);
+  }
 
   // user data
 
@@ -48,8 +52,9 @@ const UserComponent = () => {
   };
 
   useEffect(() => {
+    console.log("Hiii!!!")
     fetchUsers();
-  }, [users]);
+  }, []);
 
   // delete users 
 
@@ -68,6 +73,44 @@ const UserComponent = () => {
 
       }
       fetchUsers();
+  }
+  
+ //update user data 
+  const[userId,setUserId]= useState('')
+  const [updateName, setUpdateName] = useState("");
+  const [updateEmail, setUpdateEmail] = useState("");
+  const [updateMobile, setUpdateMobile] = useState("");
+  const [updateUserSelectedFile, setUpdateUserSelectedFile] = useState("");
+
+  const editUser = (id,name,email,mno)=>{
+    setUserId(id);
+    setUpdateName(name);
+    setUpdateEmail(email);
+    setUpdateMobile(mno);
+    updateModal();
+  }
+  const updateFormSubmit = async(event)=>{
+    event.preventDefault();
+
+    const formData = new FormData();
+
+    formData.append("user_id", userId);
+    formData.append("name", updateName);
+    formData.append("email", updateEmail);
+    formData.append("mno", updateMobile);
+    if (updateUserSelectedFile !== "" && updateUserSelectedFile.length !== 0) {
+      formData.append("image", updateUserSelectedFile);
+    }
+    const response = await UserService.update(formData);
+
+    if (response.data.success === true) {
+      alert("User Updated Successfully");
+    } else {
+      alert(response.data.msg);
+    }
+
+    updateModal();
+    fetchUsers();
   }
 
   return (
@@ -138,6 +181,7 @@ const UserComponent = () => {
               <th>MobileNo</th>
               <th>Image</th>
               <th>Delete</th>
+              <th>Edit</th>
             </tr>
           </thead>
           {users.data !== undefined && users.data.data.length > 0 && (
@@ -157,11 +201,69 @@ const UserComponent = () => {
                   <td>
                     <button className="btn btn-danger" onClick={event=> deleteUser(user._id)}>Delete</button>
                   </td>
+                  <button className="btn btn-warning" onClick={event=> editUser(user._id,user.name,user.email,user.mno)}>Update</button>
                 </tr>
               ))}
             </tbody>
           )}
         </table>
+
+         {/* update user modal */}
+         <Modal show={updateShow} onHide={updateModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Update User</Modal.Title>
+          </Modal.Header>
+          <form onSubmit={updateFormSubmit}>
+            <Modal.Body>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter Name"
+                className="w-100 mb-3"
+                value={updateName}
+                onChange={(event) => setUpdateName(event.target.value)}
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter Email"
+                className="w-100 mb-3"
+                value={updateEmail}
+                onChange={(event) => setUpdateEmail(event.target.value)}
+                required
+              />
+              <input
+                type="number"
+                name="mno"
+                placeholder="Enter Mobile No."
+                className="w-100 mb-3"
+                value={updateMobile}
+                onChange={(event) => setUpdateMobile(event.target.value)}
+                required
+              />
+              <input
+                type="file"
+                name="image"
+                className="w-100 mb-3"
+                
+                onChange={(event) => 
+                  setUpdateUserSelectedFile(event.target.files[0])}
+                required
+              />
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button variant="dark" onClick={updateModal}>
+                Close
+              </Button>
+              <Button type="submit" variant="primary">
+                Update User
+              </Button>
+            </Modal.Footer>
+          </form>
+        </Modal>
+
       </div>
     </div>
   );

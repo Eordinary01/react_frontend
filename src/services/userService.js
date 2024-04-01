@@ -23,6 +23,16 @@ class User {
     };
    return axios.post(url, formData, config);
   }
+  update(formData){
+    const url = "http://127.0.0.1:8088/api/update-user";
+    const config ={
+      headers:{
+        'Content-Type':'multipart/form-data',
+      }
+
+    };
+    return axios.post(url,formData,config);
+  }
 }
 
 export default new User();

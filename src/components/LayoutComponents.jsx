@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const LayoutComponents = () => {
   return (
@@ -11,42 +12,63 @@ const LayoutComponents = () => {
           </button>
         </div>
         <h1>
-          <a href="#" className="logo">
+          <Link to="/" className="logo">
             Management Project
-          </a>
+          </Link>
         </h1>
         <ul className="list-unstyled components mb-5">
           <li className="active">
-            <a href="#">
+            <Link to="/">
               <span className="fa fa-home mr-3"></span> Homepage
-            </a>
+            </Link>
           </li>
            <li>
-            <a href="#">
-              <span className="fa fa-user mr-3"></span> Dashboard
-            </a>
+            <Link to="/product">
+              <span className="fa fa-product-hunt mr-3"></span> Products
+            </Link>
           </li>
           
           <li>
-            <a href="#">
+            <Link to="/">
               <span className="fa fa-sticky-note mr-3"></span> Friends
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#">
+            <Link to="/">
               <span className="fa fa-sticky-note mr-3"></span> Subcription
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#">
+            <Link to="/">
               <span className="fa fa-paper-plane mr-3"></span> Settings
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#">
+            <Link  to="/">
               <span className="fa fa-paper-plane mr-3"></span> Information
-            </a>
+            </Link>
           </li> 
+          <li>
+            <Link  to="/">
+              <span className=" mr-3"></span> 
+            </Link>
+          </li> 
+          <li>
+            <Link  to="/">
+              <span className=" mr-3"></span> 
+            </Link>
+          </li> 
+          <li>
+            <Link  to="/">
+              <span className=" mr-3"></span> 
+            </Link>
+          </li> 
+          <li>
+            <Link  to="/">
+              <span className=" mr-3"></span> 
+            </Link>
+          </li> 
+          
         </ul>
       </nav>
     </div>
